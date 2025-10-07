@@ -10,5 +10,5 @@ Route::get('/', function () {
 
 Route::get('/accounts', [AccountController::class, 'index'])->name('accounts.index');
 
-
+Route::get('/accounts/create', [AccountController::class, 'create'])->name('accounts.create');
 
