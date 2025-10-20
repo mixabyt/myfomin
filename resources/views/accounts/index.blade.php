@@ -136,24 +136,103 @@
                         <li class="breadcrumb-item active">Dashboard123</li>
                         <li class="breadcrumb-item active">Dashboard123</li>
                     </ol> -->
-                    <div class="row">
-                        @foreach($accounts as $account)
-                        <div class="col-xl-3 col-md-6">
+                    <div>
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createModal">
+                            Створити
+                        </button>
 
-                            <div class="card">
-
-                                <div class="card-body">
-                                    <h4 class="card-title">{{ $account->name }}</h4>
-                                    <p class="card-text alig">{{ $account->amount }}</p>
-                                    <p class="card-text alig">{{ $account->id }}</p>
+                        <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="createModalLabel">Створити рахунок</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрити"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form method="post" action="{{ route('accounts.create') }}">
+                                            @csrf
+                                            <div class="mb-3">
+                                                <label for="InputName1" class="form-label">Name</label>
+                                                <input type="text" class="form-control" id="InputName1" name="name">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="InputAmount1" class="form-label">Amount</label>
+                                                <input type="number" class="form-control" id="InputAmount1" name="amount">
+                                            </div>
+                                            <div class="modal-footer p-0 pt-3">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+                                                <button type="submit" class="btn btn-primary">Зберегти</button>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
-
                         </div>
+                    </div>
+                    <div class="row">
+                        @foreach($accounts as $account)
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card">
+                                    <div class="position-absolute top-0 end-0">
+
+                                        <form method="POST" action="{{ route('accounts.delete', ["id" => $account->id]) }}"
+                                              onsubmit="return confirm('Ви впевнені, що хочете видалити цей обліковий запис?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger">Видалити</button>
+                                        </form>
+
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal{{ $account->id }}">
+                                            Змінити
+                                        </button>
+
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="editModal{{ $account->id }}" tabindex="-1" aria-labelledby="editModalLabel{{ $account->id }}" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="editModalLabel{{ $account->id }}">Редагувати рахунок</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрити"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form method="POST" action="{{ route('accounts.update', $account->id) }}">
+                                                            @csrf
+                                                            @method('PUT')
+                                                            <div class="form-group mb-3">
+                                                                <label for="AccountName{{ $account->id }}">Назва рахунку</label>
+                                                                <input type="text" class="form-control" id="AccountName{{ $account->id }}"
+                                                                       name="name" value="{{ $account->name }}">
+                                                            </div>
+                                                            <div class="form-group mb-3">
+                                                                <label for="Amount{{ $account->id }}">Баланс</label>
+                                                                <input type="number" class="form-control" id="Amount{{ $account->id }}" name="amount" value="{{ $account->amount }}">
+                                                            </div>
+                                                            <div class="modal-footer p-0 pt-3">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+                                                                <button type="submit" class="btn btn-primary">Зберегти</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="card-body">
+                                        <h4 class="card-title">{{ $account->name }}</h4>
+                                        <p class="card-text">{{ $account->amount }}</p>
+                                        <p class="card-text">{{ $account->id }}</p>
+                                    </div>
+                                </div>
+                            </div>
                         @endforeach
+
                     </div>
 
-                </div>
+
+
+
             </main>
             <!-- <footer class="py-4 bg-light mt-auto">
                     <div class="container-fluid px-4">
@@ -178,6 +257,11 @@
     <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"
         crossorigin="anonymous"></script>
     <script src="{{ asset('js/datatables-simple-demo.js') }}"></script>
+    <script>
+        $('#myModal').on('shown.bs.modal', function () {
+            $('#myInput').trigger('focus')
+        })
+    </script>
 </body>
 
 </html>
