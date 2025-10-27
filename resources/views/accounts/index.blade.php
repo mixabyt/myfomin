@@ -12,6 +12,11 @@
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <style>
+        .disabled {
+            display: none;
+        }
+    </style>
 </head>
 
 
@@ -56,6 +61,10 @@
                         <a class="nav-link" href="index.html">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Приладова панель
+                        </a>
+                        <a class="nav-link" href="{{route("transactions.index")}}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Історія транзакцій
                         </a>
                         <div class="sb-sidenav-menu-heading">Інтерфейс</div>
                         <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
@@ -128,124 +137,173 @@
             </nav>
         </div>
         <div id="layoutSidenav_content">
-            <main>
-                <div class="container-fluid px-4">
-                    <h1 class="mt-4">Список ваших рахунків</h1>
-                    <!-- <ol class="breadcrumb mb-4">
-                        <li class="breadcrumb-item active">Dashboard123</li>
-                        <li class="breadcrumb-item active">Dashboard123</li>
-                        <li class="breadcrumb-item active">Dashboard123</li>
-                    </ol> -->
-                    <div>
-                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createModal">
-                            Створити
-                        </button>
+            <div class="container-fluid px-4">
+                <h1 class="mt-4">Список ваших рахунків</h1>
+                <!-- <ol class="breadcrumb mb-4">
+                    <li class="breadcrumb-item active">Dashboard123</li>
+                    <li class="breadcrumb-item active">Dashboard123</li>
+                    <li class="breadcrumb-item active">Dashboard123</li>
+                </ol> -->
+                <div>
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createModal">
+                        Створити
+                    </button>
 
-                        <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="createModalLabel">Створити рахунок</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрити"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <form method="post" action="{{ route('accounts.create') }}">
-                                            @csrf
-                                            <div class="mb-3">
-                                                <label for="InputName1" class="form-label">Name</label>
-                                                <input type="text" class="form-control" id="InputName1" name="name">
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="InputAmount1" class="form-label">Amount</label>
-                                                <input type="number" class="form-control" id="InputAmount1" name="amount">
-                                            </div>
-                                            <div class="modal-footer p-0 pt-3">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
-                                                <button type="submit" class="btn btn-primary">Зберегти</button>
-                                            </div>
-                                        </form>
-                                    </div>
+                    <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="createModalLabel">Створити рахунок</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрити"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form method="post" action="{{ route('accounts.create') }}">
+                                        @csrf
+                                        <div class="mb-3">
+                                            <label for="InputName1" class="form-label">Name</label>
+                                            <input type="text" class="form-control" id="InputName1" name="name">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="InputAmount1" class="form-label">Amount</label>
+                                            <input type="number" step="0.01" class="form-control" id="InputAmount1" name="amount">
+                                        </div>
+                                        <div class="modal-footer p-0 pt-3">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+                                            <button type="submit" class="btn btn-primary">Зберегти</button>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        @foreach($accounts as $account)
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card">
-                                    <div class="position-absolute top-0 end-0">
+                </div>
+                <div class="row">
+                    @foreach($accounts as $account)
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card">
+                                <div class="position-absolute top-0 end-0">
 
-                                        <form method="POST" action="{{ route('accounts.delete', ["id" => $account->id]) }}"
-                                              onsubmit="return confirm('Ви впевнені, що хочете видалити цей обліковий запис?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger">Видалити</button>
-                                        </form>
+                                    <form method="POST" action="{{ route('accounts.delete', ["id" => $account->id]) }}"
+                                          onsubmit="return confirm('Ви впевнені, що хочете видалити цей обліковий запис?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger">Видалити</button>
+                                    </form>
 
-                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal{{ $account->id }}">
-                                            Змінити
-                                        </button>
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal{{ $account->id }}">
+                                        Змінити
+                                    </button>
 
-                                        <!-- Modal -->
-                                        <div class="modal fade" id="editModal{{ $account->id }}" tabindex="-1" aria-labelledby="editModalLabel{{ $account->id }}" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="editModalLabel{{ $account->id }}">Редагувати рахунок</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрити"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <form method="POST" action="{{ route('accounts.update', $account->id) }}">
-                                                            @csrf
-                                                            @method('PUT')
-                                                            <div class="form-group mb-3">
-                                                                <label for="AccountName{{ $account->id }}">Назва рахунку</label>
-                                                                <input type="text" class="form-control" id="AccountName{{ $account->id }}"
-                                                                       name="name" value="{{ $account->name }}">
-                                                            </div>
-                                                            <div class="form-group mb-3">
-                                                                <label for="Amount{{ $account->id }}">Баланс</label>
-                                                                <input type="number" class="form-control" id="Amount{{ $account->id }}" name="amount" value="{{ $account->amount }}">
-                                                            </div>
-                                                            <div class="modal-footer p-0 pt-3">
-                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
-                                                                <button type="submit" class="btn btn-primary">Зберегти</button>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="editModal{{ $account->id }}" tabindex="-1" aria-labelledby="editModalLabel{{ $account->id }}" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="editModalLabel{{ $account->id }}">Редагувати рахунок</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрити"></button>
                                                 </div>
+                                                <div class="modal-body">
+                                                    <form method="POST" action="{{ route('accounts.update', $account->id) }}">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <div class="form-group mb-3">
+                                                            <label for="AccountName{{ $account->id }}">Назва рахунку</label>
+                                                            <input type="text" class="form-control" id="AccountName{{ $account->id }}"
+                                                                   name="name" value="{{ $account->name }}">
+                                                        </div>
+                                                        <div class="form-group mb-3">
+                                                            <label for="Amount{{ $account->id }}">Баланс</label>
+                                                            <input type="number" class="form-control" id="Amount{{ $account->id }}" name="amount" value="{{ $account->amount }}">
+                                                        </div>
+                                                        <div class="modal-footer p-0 pt-3">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+                                                            <button type="submit" class="btn btn-primary">Зберегти</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+
                                             </div>
                                         </div>
+                                    </div>
 
+                                    <button type="submit" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#NewTransactionModal{{ $account->id }}">
+                                        додати транзакцію
+                                    </button>
+
+                                    <div class="modal fade" id="NewTransactionModal{{ $account->id }}" tabindex="-1" aria-labelledby="NewTransactionModalLabel{{ $account->id }}" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="NewTransactionModalLabel{{ $account->id }}">додати нову транзакцію</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрити"></button>
+                                                </div>
+                                                <div class="modal-body" id="transactionsContainer">
+                                                    <form method="POST" class="js--transactionClassForm" id="transactionForm{{$account->id}}" action="{{ route('transactions.create') }}">
+                                                        @csrf
+                                                        @method('POST')
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="radio" id="radioDeposit{{ $account->id }}" value="deposit">
+                                                            <label class="form-check-label" for="radioDeposit{{ $account->id }}">
+                                                                Поповнення
+                                                            </label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="radio" id="radioSpend{{ $account->id }}" value="spend">
+                                                            <label class="form-check-label" for="radioSpend{{ $account->id }}">
+                                                                Витрачення
+                                                            </label>
+                                                        </div>
+                                                        <span class="disabled js--radioError">привіт</span>
+                                                        <div class="form-group mb-3">
+                                                            <label for="">Кількість</label>
+                                                            <input type="number" class="form-control" id="" name="amount" min="0">
+                                                            <input type="hidden" name="account_id" value="{{ $account->id }}">
+                                                        </div>
+                                                        <span class="disabled js--amountError">test</span>
+
+
+                                                        <div class="modal-footer p-0 pt-3">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+                                                            <button type="submit" class="btn btn-primary">Зберегти</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="card-body">
-                                        <h4 class="card-title">{{ $account->name }}</h4>
-                                        <p class="card-text">{{ $account->amount }}</p>
-                                        <p class="card-text">{{ $account->id }}</p>
-                                    </div>
+
+                                    <form>
+
+                                    </form>
+
+                                </div>
+                                <div class="card-body">
+                                    <h4 class="card-title">{{ $account->name }}</h4>
+                                    <p class="card-text">Баланс: {{ $account->amount }}</p>
+
                                 </div>
                             </div>
-                        @endforeach
+                        </div>
+                    @endforeach
 
-                    </div>
+                </div>
 
 
 
 
-            </main>
-            <!-- <footer class="py-4 bg-light mt-auto">
-                    <div class="container-fluid px-4">
-                        <div class="d-flex align-items-center justify-content-between small">
-                            <div class="text-muted">Copyright &copy; Your Website 2023</div>
-                            <div>
-                                <a href="#">Privacy Policy</a>
-                                &middot;
-                                <a href="#">Terms &amp; Conditions</a>
+                <!-- <footer class="py-4 bg-light mt-auto">
+                        <div class="container-fluid px-4">
+                            <div class="d-flex align-items-center justify-content-between small">
+                                <div class="text-muted">Copyright &copy; Your Website 2023</div>
+                                <div>
+                                    <a href="#">Privacy Policy</a>
+                                    &middot;
+                                    <a href="#">Terms &amp; Conditions</a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </footer> -->
+                    </footer> -->
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
@@ -256,12 +314,42 @@
     <script src="{{asset('assets/demo/chart-area-demo.js')}}"></script>
     <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"
         crossorigin="anonymous"></script>
-    <script src="{{ asset('js/datatables-simple-demo.js') }}"></script>
     <script>
-        $('#myModal').on('shown.bs.modal', function () {
-            $('#myInput').trigger('focus')
-        })
+
+            Array.from(document.getElementsByClassName("js--transactionClassForm")).map((form) => {
+                form.addEventListener("submit", (Event)=>{
+                    const formData = new FormData(form)
+                    const radio = formData.get("radio")
+                    const input = formData.get("amount")
+                    console.log(input)
+                    // console.log(radio)
+                    if (radio != null && input !== "") {
+                        form.querySelector(".js--radioError").classList.remove("disabled")
+                        form.querySelector(".js--amountError").classList.remove("disabled")
+                        return
+                    }
+
+                    if (radio == null) {
+                        form.querySelector(".js--radioError").classList.remove("disabled")
+                    } else {
+                        form.querySelector(".js--radioError").classList.add("disabled")
+                    }
+
+                    if (input === "") {
+                        form.querySelector(".js--amountError").classList.remove("disabled")
+                    } else {
+                        form.querySelector(".js--amountError").classList.add("disabled")
+                    }
+                    Event.preventDefault()
+
+                })
+            })
+
+
+
+
     </script>
+        <script src="{{ asset('js/datatables-simple-demo.js') }}"></script>
 </body>
 
 </html>

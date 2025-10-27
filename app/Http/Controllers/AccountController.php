@@ -5,7 +5,7 @@ use Illuminate\Http\RedirectResponse;
 use App\Models\Account;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-
+use Illuminate\Routing\Redirector;
 class AccountController extends Controller
 {
     public function index() {
@@ -14,10 +14,16 @@ class AccountController extends Controller
 
     }
 
-    public function create() {
+    public function store(): Redirector|RedirectResponse
+    {
+        $validated = request()->validate([
+            'name' => ['required', 'string', 'max:20'],
+            'amount' => ['required', 'numeric', 'max:100000000'],
+        ]);
+
         Account::create([
-            'name' => request('name'),
-            'amount' => request('amount'),
+            'name' => $validated['name'],
+            'amount' => $validated['amount'],
         ]);
         return redirect(route("accounts.index"));
     }
