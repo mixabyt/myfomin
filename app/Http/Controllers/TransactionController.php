@@ -21,6 +21,7 @@ class TransactionController extends Controller
         $type = request('radio');
         $accountID = request('account_id');
         $amount = request('amount');
+
         Transaction::create([
             'type' => $type,
             'amount' => $amount,
