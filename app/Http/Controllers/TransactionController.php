@@ -11,7 +11,8 @@ class TransactionController extends Controller
 
     public function index()
     {
-        $transactions = Transaction::all();
+        // Order transactions by 'created_at' descending (latest first)
+        $transactions = Transaction::orderBy('created_at', 'desc')->get();
         return view('transactions.index', compact('transactions'));
     }
 
@@ -28,13 +29,11 @@ class TransactionController extends Controller
             'created_at' => now(),
         ]);
 
-       if ($type === 'deposit') {
-           Account::where('id', $accountID)->increment('amount', $amount);
-       } else {
-           Account::where('id', $accountID)->decrement('amount', $amount);
-       }
+        if ($type === 'deposit') {
+            Account::where('id', $accountID)->increment('amount', $amount);
+        } else {
+            Account::where('id', $accountID)->decrement('amount', $amount);
+        }
         return redirect(route("accounts.index"));
-
     }
 }
-
