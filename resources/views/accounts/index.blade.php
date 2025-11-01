@@ -253,14 +253,28 @@
                                                                 Витрачення
                                                             </label>
                                                         </div>
-                                                        <span class="disabled js--radioError">привіт</span>
+                                                        <span class="disabled js--radioError" style="color: red;">Необхідно вибрати тип транзакції</span>
+
+                                                        <div class="dropdown mt-2">
+                                                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                Вибрати категорію
+                                                            </button>
+                                                            <ul class="dropdown-menu js--categoryList"></ul>
+                                                            <div class="js--categoryError disabled text-danger mt-1">Виберіть категорію</div>
+                                                            <input type="hidden" name="category_id" class="js--categoryInput">
+                                                        </div>
+                                                        <span class="disabled js--dropListError" style="color: red;" >Будь ласка виберіть категорію</span>
                                                         <div class="form-group mb-3">
                                                             <label for="">Кількість</label>
                                                             <input type="number" class="form-control" id="" name="amount" min="0">
                                                             <input type="hidden" name="account_id" value="{{ $account->id }}">
                                                         </div>
-                                                        <span class="disabled js--amountError">test</span>
+                                                        <span class="disabled js--amountError" style="color: red;" >Будь ласка вкажіть суму</span>
 
+                                                        <div class="form-group mb-3">
+                                                            <label for="desc{{$account->id}}">Опис</label>
+                                                            <input type="text" class="form-control" id="desc{{$account->id}}" name="description">
+                                                        </div>
 
                                                         <div class="modal-footer p-0 pt-3">
                                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
@@ -292,6 +306,7 @@
 
 
 
+
                 <!-- <footer class="py-4 bg-light mt-auto">
                         <div class="container-fluid px-4">
                             <div class="d-flex align-items-center justify-content-between small">
@@ -316,36 +331,97 @@
         crossorigin="anonymous"></script>
     <script>
 
-            Array.from(document.getElementsByClassName("js--transactionClassForm")).map((form) => {
-                form.addEventListener("submit", (Event)=>{
-                    const formData = new FormData(form)
-                    const radio = formData.get("radio")
-                    const input = formData.get("amount")
-                    console.log(input)
-                    // console.log(radio)
-                    if (radio != null && input !== "") {
-                        form.querySelector(".js--radioError").classList.remove("disabled")
-                        form.querySelector(".js--amountError").classList.remove("disabled")
-                        return
-                    }
+        // --- Вибір категорії ---
+        document.addEventListener('click', (e) => {
+            if (e.target.matches('.dropdown-item')) {
+                e.preventDefault();
+                const categoryName = e.target.textContent;
+                const categoryId = e.target.dataset.categoryId;
 
-                    if (radio == null) {
-                        form.querySelector(".js--radioError").classList.remove("disabled")
-                    } else {
-                        form.querySelector(".js--radioError").classList.add("disabled")
-                    }
+                const dropdown = e.target.closest('.dropdown');
+                const btn = dropdown.querySelector('button');
+                const input = dropdown.querySelector('.js--categoryInput');
 
-                    if (input === "") {
-                        form.querySelector(".js--amountError").classList.remove("disabled")
-                    } else {
-                        form.querySelector(".js--amountError").classList.add("disabled")
-                    }
-                    Event.preventDefault()
+                // Оновлюємо кнопку і приховане поле
+                btn.textContent = categoryName;
+                btn.dataset.categoryId = categoryId;
+                input.value = categoryId; // 🟢 ось головне — щоб request('category_id') працював
+            }
+        });
 
-                })
+        // --- Підвантаження категорій ---
+        document.querySelectorAll('input[name="radio"]').forEach(radio => {
+            radio.addEventListener('change', async (event) => {
+                const type = event.target.value;
+                const form = event.target.closest('form');
+                const categoryList = form.querySelector('.js--categoryList');
+                const dropdownBtn = form.querySelector('.dropdown-toggle');
+                const categoryInput = form.querySelector('.js--categoryInput');
+
+                // Скидаємо вибрану категорію
+                dropdownBtn.textContent = "Вибрати категорію";
+                dropdownBtn.removeAttribute('data-category-id');
+                categoryInput.value = ''; // 🟢 очищаємо значення
+
+                categoryList.innerHTML = '<li class="dropdown-item text-muted">Завантаження...</li>';
+
+                try {
+                    const response = await fetch(`/categories/${type}`);
+                    const categories = await response.json();
+
+                    categoryList.innerHTML = '';
+                    categories.forEach(cat => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `<a class="dropdown-item" href="#" data-category-id="${cat.id}">${cat.name}</a>`;
+                        categoryList.appendChild(li);
+                    });
+
+                } catch (error) {
+                    console.error(error);
+                    categoryList.innerHTML = '<li class="dropdown-item text-danger">Помилка завантаження</li>';
+                }
+            });
+        });
+
+        // --- Валідація ---
+        Array.from(document.getElementsByClassName("js--transactionClassForm")).map((form) => {
+            form.addEventListener("submit", (Event) => {
+                const formData = new FormData(form)
+                const radio = formData.get("radio")
+                const input = formData.get("amount")
+                const categoryId = formData.get("category_id")
+
+                let valid = true;
+
+                // Radio
+                if (radio == null) {
+                    form.querySelector(".js--radioError").classList.remove("disabled")
+                    valid = false;
+                } else {
+                    form.querySelector(".js--radioError").classList.add("disabled")
+                }
+
+                // Amount
+                if (input === "") {
+                    form.querySelector(".js--amountError").classList.remove("disabled")
+                    valid = false;
+                } else {
+                    form.querySelector(".js--amountError").classList.add("disabled")
+                }
+
+                // Category
+                if (!categoryId) {
+                    form.querySelector(".js--categoryError").classList.remove("disabled")
+                    valid = false;
+                } else {
+                    form.querySelector(".js--categoryError").classList.add("disabled")
+                }
+
+                if (!valid) {
+                    Event.preventDefault();
+                }
             })
-
-
+        })
 
 
     </script>

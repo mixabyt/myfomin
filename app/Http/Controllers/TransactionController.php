@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Account;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Models\Transaction;
 
@@ -11,8 +12,11 @@ class TransactionController extends Controller
 
     public function index()
     {
-        // Order transactions by 'created_at' descending (latest first)
-        $transactions = Transaction::orderBy('created_at', 'desc')->get();
+        // Отримуємо всі транзакції разом з їхніми категоріями
+        $transactions = Transaction::with('category')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         return view('transactions.index', compact('transactions'));
     }
 
@@ -26,7 +30,9 @@ class TransactionController extends Controller
             'type' => $type,
             'amount' => $amount,
             'account_id' => $accountID,
+            'category_id' => request('category_id'),
             'created_at' => now(),
+            'description' => request('description')
         ]);
 
         if ($type === 'deposit') {
