@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\web;
+use App\Http\Controllers\Controller;
 use App\Models\Account;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;

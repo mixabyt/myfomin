@@ -3,6 +3,7 @@
 use App\Http\Controllers\web\AccountController;
 use App\Http\Controllers\web\CategoryController;
 use App\Http\Controllers\web\TransactionController;
+use App\Http\Controllers\api\AccountApiController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -22,4 +23,11 @@ Route::get('/categories/{type}', [CategoryController::class, 'index'])->name('ca
 
 Route::get('/test', function () {
     return view('test');
+});
+
+Route::prefix('api')->group(function () {
+    Route::get('/accounts', [AccountApiController::class, 'index']);
+    Route::post('/accounts', [AccountApiController::class, 'store']);
+    Route::delete('/accounts/{id}', [AccountApiController::class, 'delete']);
+    Route::put('/accounts/{id}', [AccountApiController::class, 'update']);
 });
