@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Account;
@@ -10,10 +10,39 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response as ResponseAlias;
 
-class TransactionController extends Controller
+/**
+ * @OA\Tag(
+ *     name="Transactions",
+ *     description="User transaction operations"
+ * )
+ */
+
+class TransactionApiController extends Controller
 {
     /**
-     * Повертає список усіх транзакцій з категоріями
+     * Returns a list of all transactions with categories
+     */
+
+    /**
+     * @OA\Get(
+     *     path="/api/transactions",
+     *     summary="Get all transactions with categories and accounts",
+     *     description="Returns a list of all transactions ordered by creation date (descending)",
+     *     tags={"Transactions"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfully retrieved transaction list",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/Transaction")
+     *             )
+     *         )
+     *     )
+     * )
      */
     public function index(): JsonResponse
     {
@@ -28,7 +57,55 @@ class TransactionController extends Controller
     }
 
     /**
-     * Створює нову транзакцію (deposit або withdrawal)
+     * Creates a new transaction (deposit or withdrawal)
+     */
+    /**
+     * @OA\Post(
+     *     path="/api/transactions",
+     *     summary="Create a new transaction (deposit or withdrawal)",
+     *     description="Adds a new transaction and updates the account balance.",
+     *     tags={"Transactions"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"type","account_id","category_id","amount"},
+     *             @OA\Property(property="type", type="string", enum={"deposit","withdrawal"}, example="deposit", description="Transaction type"),
+     *             @OA\Property(property="account_id", type="integer", example=1, description="Account ID"),
+     *             @OA\Property(property="category_id", type="integer", example=3, description="Category ID"),
+     *             @OA\Property(property="amount", type="number", format="float", example=1500.50, description="Transaction amount"),
+     *             @OA\Property(property="description", type="string", example="Deposit from client", description="Transaction description (optional)")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Transaction created successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Transaction created successfully"),
+     *             @OA\Property(property="data", ref="#/components/schemas/Transaction")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid request data",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Validation error: type field is required.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error creating transaction",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Failed to create transaction"),
+     *             @OA\Property(property="error", type="string", example="SQLSTATE[23000]: Integrity constraint violation ...")
+     *         )
+     *     )
+     * )
      */
     public function store(Request $request): JsonResponse
     {
@@ -43,7 +120,7 @@ class TransactionController extends Controller
         try {
             DB::beginTransaction();
 
-            // Створення транзакції
+            // Create transaction
             $transaction = Transaction::create([
                 'type' => $validated['type'],
                 'amount' => $validated['amount'],
@@ -53,7 +130,7 @@ class TransactionController extends Controller
                 'created_at' => now(),
             ]);
 
-            // Оновлення балансу акаунта
+            // Update account balance
             if ($validated['type'] === 'deposit') {
                 Account::where('id', $validated['account_id'])->increment('amount', $validated['amount']);
             } else {
