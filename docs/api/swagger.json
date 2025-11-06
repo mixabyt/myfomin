@@ -1,0 +1,34 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "MyFomin API Documentation",
+        "description": "API documentation for MyFomin",
+        "version": "0.0.1"
+    },
+    "paths": {
+        "/accounts": {
+            "get": {
+                "tags": [
+                    "Accounts"
+                ],
+                "summary": "View all accounts (HTML page)",
+                "description": "Returns an HTML page with list of accounts",
+                "operationId": "a5af6b64c5ff2ea0a75cec62e63a632e",
+                "responses": {
+                    "200": {
+                        "description": "HTML page returned successfully",
+                        "content": {
+                            "text/html": {}
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Accounts",
+            "description": "Accounts"
+        }
+    ]
+}

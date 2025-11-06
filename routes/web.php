@@ -1,10 +1,10 @@
 <?php
 
-use App\Http\Controllers\AccountController;
-use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\web\AccountController;
+use App\Http\Controllers\web\CategoryController;
+use App\Http\Controllers\web\TransactionController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\TransactionController;
-use App\Models\Category;
+
 Route::get('/', function () {
 
     return view('loadapp');
