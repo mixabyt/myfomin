@@ -4,19 +4,132 @@ info:
   description: 'API documentation for MyFomin'
   version: 0.0.1
 paths:
-  /accounts:
+  /api/accounts:
     get:
       tags:
         - Accounts
-      summary: 'View all accounts (HTML page)'
-      description: 'Returns an HTML page with list of accounts'
-      operationId: a5af6b64c5ff2ea0a75cec62e63a632e
+      summary: 'Get list of all accounts'
+      operationId: 1b2191927587210525a455ee8043e241
       responses:
         200:
-          description: 'HTML page returned successfully'
+          description: 'List of accounts returned successfully'
           content:
-            text/html: []
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Account'
+    post:
+      tags:
+        - Accounts
+      summary: 'Create a new account'
+      operationId: a5f891133070fbf83cdb4d0a43733c23
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - name
+                - amount
+              properties:
+                name:
+                  type: string
+                  maxLength: 20
+                  example: 'Main Account'
+                amount:
+                  type: number
+                  example: 5000.75
+              type: object
+      responses:
+        201:
+          description: 'Account created successfully'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        422:
+          description: 'Validation error'
+  '/api/accounts/{id}':
+    put:
+      tags:
+        - Accounts
+      summary: 'Update an existing account'
+      operationId: e28ecefc685941c32052d72fdb0833cc
+      parameters:
+        -
+          name: id
+          in: path
+          description: 'ID of account to update'
+          required: true
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - name
+                - amount
+              properties:
+                name:
+                  type: string
+                  example: 'Updated Account'
+                amount:
+                  type: number
+                  example: 7000.5
+              type: object
+      responses:
+        200:
+          description: 'Account updated successfully'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        404:
+          description: 'Account not found'
+    delete:
+      tags:
+        - Accounts
+      summary: 'Delete an account'
+      operationId: 38dc109b2671b3853e541b1438f1935b
+      parameters:
+        -
+          name: id
+          in: path
+          description: 'ID of account to delete'
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        204:
+          description: 'Account deleted successfully'
+        404:
+          description: 'Account not found'
+components:
+  schemas:
+    Account:
+      title: Account
+      description: 'Account model schema'
+      required:
+        - id
+        - name
+        - amount
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: 'Main Account'
+        amount:
+          type: number
+          example: 5000
+      type: object
 tags:
   -
     name: Accounts
-    description: Accounts
+    description: 'API Endpoints for managing accounts'

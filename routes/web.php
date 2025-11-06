@@ -3,7 +3,7 @@
 use App\Http\Controllers\web\AccountController;
 use App\Http\Controllers\web\CategoryController;
 use App\Http\Controllers\web\TransactionController;
-use App\Http\Controllers\api\AccountApiController;
+use App\Http\Controllers\Api\AccountApiController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
