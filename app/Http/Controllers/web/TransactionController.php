@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\web;
 
+use app\http\Controllers\Controller;
+
 use App\Models\Account;
 use App\Models\Transaction;
 
