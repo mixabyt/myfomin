@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\CategoryApiController;
+use App\Http\Controllers\Api\TransactionApiController;
 use App\Http\Controllers\web\AccountController;
 use App\Http\Controllers\web\CategoryController;
 use App\Http\Controllers\web\TransactionController;
@@ -26,8 +28,14 @@ Route::get('/test', function () {
 });
 
 Route::prefix('api')->group(function () {
-    Route::get('/accounts', [AccountApiController::class, 'index']);
     Route::post('/accounts', [AccountApiController::class, 'store']);
-    Route::delete('/accounts/{id}', [AccountApiController::class, 'delete']);
+    Route::get('/accounts', [AccountApiController::class, 'index']);
     Route::put('/accounts/{id}', [AccountApiController::class, 'update']);
+    Route::delete('/accounts/{id}', [AccountApiController::class, 'destroy']);
+
+    Route::get('/categories/{type}', [CategoryApiController::class, 'index']);
+
+    Route::get('/transactions', [TransactionApiController::class, 'index']);
+    Route::post('/transactions', [TransactionApiController::class, 'store']);
+
 });
