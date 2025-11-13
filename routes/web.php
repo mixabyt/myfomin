@@ -35,7 +35,9 @@ Route::prefix('api')->group(function () {
 
     Route::get('/categories/{type}', [CategoryApiController::class, 'index']);
 
-    Route::get('/transactions', [TransactionApiController::class, 'index']);
     Route::post('/transactions', [TransactionApiController::class, 'store']);
+    Route::get('/transactions', [TransactionApiController::class, 'index']);
+    Route::put('/transactions/{id}', [TransactionApiController::class, 'update']);
+    Route::delete('/transactions/{id}', [TransactionApiController::class, 'destroy']);
 
 });

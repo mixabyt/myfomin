@@ -27,9 +27,11 @@ class TransactionResponseDto {
         $this->type = $transaction->type;
         $this->amount = $transaction->amount;
         $this->description = $transaction->description ?? "";
-        $this->created_at = $transaction->created_at->toDateTimeString();
+        $this->created_at = $transaction->created_at instanceof \Carbon\Carbon
+            ? $transaction->created_at->toDateTimeString()
+            : $transaction->created_at;
 
-        // Просто передаємо самі моделі
+
         $this->category = $transaction->category;
         $this->account = $transaction->account;
     }

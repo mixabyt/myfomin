@@ -30,11 +30,7 @@ class AccountService {
     }
 
     public function deleteByID(int $id): bool {
-        if ($this->accountRepository->deleteById($id)) {
-            return true;
-        } else {
-            return false;
-        }
+        return $this->accountRepository->deleteById($id);
 
     }
 

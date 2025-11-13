@@ -98,7 +98,7 @@ class AccountApiController extends Controller
      *     )
      * )
      */
-    public function destroy($accountID)
+    public function destroy($accountID): \Illuminate\Http\Response|JsonResponse
     {
         if ($this->accountService->deleteByID($accountID)) {
             return $this->respondNodata();
@@ -139,9 +139,9 @@ class AccountApiController extends Controller
      * )
      */
 
-    public function update(AccountRequest $request) {
+    public function update(AccountRequest $request, $id) {
         $data = $request->validated();
-        $dto = new AccountDto(request('id'), $data['name'], $data['amount']);
+        $dto = new AccountDto($id, $data['name'], $data['amount']);
         $accountDto = $this->accountService->update($dto);
         return $this->respond($accountDto, ResponseAlias::HTTP_OK);
     }

@@ -27,6 +27,7 @@ class TransactionRequest extends FormRequest
             'category_id' => ['required', 'exists:categories,id'],
             'amount' => ['required', 'numeric', 'min:0.01'],
             'description' => ['nullable', 'string', 'max:255'],
+            'created_at' => ['nullable', 'date'],
         ];
     }
 }
