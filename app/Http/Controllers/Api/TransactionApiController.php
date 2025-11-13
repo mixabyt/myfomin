@@ -112,6 +112,40 @@ class TransactionApiController extends Controller
         return $this->respond($dtoResponse, ResponseAlias::HTTP_CREATED);
     }
 
+    /**
+     * Update a transaction.
+     *
+     * @OA\Put(
+     *     path="/api/transactions/{id}",
+     *     summary="Update a transaction",
+     *     tags={"Transactions"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Transaction ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/TransactionDto")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Transaction updated successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/TransactionDto")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid request data"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Transaction not found"
+     *     )
+     * )
+     */
+
     public function update(TransactionRequest $request, $id): JsonResponse {
         $transaction =  $request->validated();
         $transaction['id'] = $id;
@@ -120,6 +154,32 @@ class TransactionApiController extends Controller
         return $this->respond($dto, ResponseAlias::HTTP_OK);
     }
 
+
+
+    /**
+     * Delete a transaction.
+     *
+     * @OA\Delete(
+     *     path="/api/transactions/{id}",
+     *     summary="Delete a transaction",
+     *     tags={"Transactions"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Transaction ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="Transaction deleted successfully"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Transaction not found"
+     *     )
+     * )
+     */
 
     public function destroy(int $id) : Response|JsonResponse {
         if ($this->transactionService->deleteByID($id)) {
