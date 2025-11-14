@@ -2,6 +2,7 @@
 
 namespace App\Services;
 use App\Dto\AccountDto;
+use App\Dto\TransactionDto;
 use App\Dto\TransactionRequestDto;
 use App\Dto\TransactionResponseDto;
 use App\Repositories\AccountRepository;
@@ -31,6 +32,28 @@ class TransactionService
            return new TransactionResponseDto($transaction->load('category', 'account'));
 
         });
+    }
+
+    // the transaction type will not change in the future
+    public function update(TransactionDto $dto) : TransactionResponseDto {
+
+        return DB::transaction(function () use ($dto) {
+            $transaction = $this->transactionRepository->getById($dto->id);
+
+            $change = $dto->amount - $transaction->amount;
+
+            $updatedTransaction = $this->transactionRepository->update($dto);
+            $this->accountRepository->changeAmount($dto->account_id, $change, $dto->type);
+            return new TransactionResponseDto($updatedTransaction->load('category', 'account'));
+
+        });
+
+
+
+    }
+
+    public function deleteByID(int $id) : bool {
+        return $this->transactionRepository->deleteByID($id);
     }
 
 }

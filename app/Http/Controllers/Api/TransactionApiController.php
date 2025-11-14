@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Dto\TransactionDto;
 use App\Dto\TransactionRequestDto;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TransactionRequest;
@@ -11,6 +12,7 @@ use App\Services\TransactionService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 /**
@@ -106,8 +108,84 @@ class TransactionApiController extends Controller
     {
         $data = $request->validated();
         $dto = new TransactionRequestDto($data);
-        $dtoreponse = $this->transactionService->store($dto);
-        return $this->respond($dtoreponse, ResponseAlias::HTTP_CREATED);
+        $dtoResponse = $this->transactionService->store($dto);
+        return $this->respond($dtoResponse, ResponseAlias::HTTP_CREATED);
+    }
 
+    /**
+     * Update a transaction.
+     *
+     * @OA\Put(
+     *     path="/api/transactions/{id}",
+     *     summary="Update a transaction",
+     *     tags={"Transactions"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Transaction ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/TransactionDto")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Transaction updated successfully",
+     *         @OA\JsonContent(ref="#/components/schemas/TransactionDto")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid request data"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Transaction not found"
+     *     )
+     * )
+     */
+
+    public function update(TransactionRequest $request, $id): JsonResponse {
+        $transaction =  $request->validated();
+        $transaction['id'] = $id;
+        $dto = new TransactionDto($transaction);
+        $this->transactionService->update($dto);
+        return $this->respond($dto, ResponseAlias::HTTP_OK);
+    }
+
+
+
+    /**
+     * Delete a transaction.
+     *
+     * @OA\Delete(
+     *     path="/api/transactions/{id}",
+     *     summary="Delete a transaction",
+     *     tags={"Transactions"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Transaction ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="Transaction deleted successfully"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Transaction not found"
+     *     )
+     * )
+     */
+
+    public function destroy(int $id) : Response|JsonResponse {
+        if ($this->transactionService->deleteByID($id)) {
+            return $this->respondNodata();
+        } else {
+            return $this->error("Not Found", "there is no record with such id", ResponseAlias::HTTP_NOT_FOUND);
+        }
     }
 }

@@ -23,7 +23,7 @@ class CategoryApiController extends Controller
      **
      * @OA\Get(
      *     path="/api/categories/{type}",
-     *     summary="Get a list of categories by type (deposet or spend)",
+     *     summary="Get a list of categories by type (deposit or spend)",
      *     description="Returns a list of categories filtered by type. The 'type' parameter is required.",
      *     tags={"Categories"},
      *     @OA\Parameter(
