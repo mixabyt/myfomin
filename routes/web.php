@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\TransactionApiController;
 use App\Http\Controllers\web\AccountController;
 use App\Http\Controllers\web\CategoryController;
 use App\Http\Controllers\web\TransactionController;
+use App\Http\Controllers\web\HealthController;
 use App\Http\Controllers\Api\AccountApiController;
 use Illuminate\Support\Facades\Route;
 
@@ -41,3 +42,5 @@ Route::prefix('api')->group(function () {
     Route::delete('/transactions/{id}', [TransactionApiController::class, 'destroy']);
 
 });
+
+Route::get('/health', [HealthController::class, 'check']);
