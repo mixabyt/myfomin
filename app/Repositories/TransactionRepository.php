@@ -21,25 +21,25 @@ class TransactionRepository
         return $this->transaction->where('id', $id)->first();
     }
 
-    public function create(TransactionRequestDto $dto) : Transaction {
+    public function create(array $dto) : Transaction {
         return $this->transaction->create([
-            'account_id' => $dto->account_id,
-            'type' => $dto->type,
-            'amount' => $dto->amount,
-            'description' => $dto->description,
-            'category_id' => $dto->category_id,
+            'account_id' => $dto['account_id'],
+            'type' => $dto['type'],
+            'amount' => $dto['amount'],
+            'description' => $dto['description'],
+            'category_id' => $dto['category_id'],
         ]);
     }
 
-    public function update(TransactionDto $dto) : Transaction {
-         $transaction = $this->transaction->where('id', $dto->id)->first();
-        $transaction->account_id = $dto->account_id;
-        $transaction->type = $dto->type;
-        $transaction->amount = $dto->amount;
-        $transaction->description = $dto->description ?? null;
-        $transaction->category_id = $dto->category_id;
-        if ($dto->created_at !== null) {
-            $transaction->created_at = $dto->created_at;
+    public function update(int $id, array $data) : Transaction {
+         $transaction = $this->transaction->where('id', $id)->first();
+        $transaction->account_id = $data['account_id'];
+        $transaction->type = $data['type'];
+        $transaction->amount = $data['amount'];
+        $transaction->description = $data['description'] ?? null;
+        $transaction->category_id = $data['category_id'];
+        if ($data['created_at'] !== null) {
+            $transaction->created_at = $data['created_at'];
         }
         $transaction->save();
         return $transaction;

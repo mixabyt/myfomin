@@ -14,7 +14,7 @@ class TransactionResponseDto {
     public string $type;
     public int $amount;
     public string $created_at;
-    public int $category_id;
+    public ?int $category_id;
     public string $description;
 
     public Category $category;
