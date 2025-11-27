@@ -2,16 +2,23 @@
 
 namespace App\Providers;
 
+use App\Models\Account;
+use App\Policies\AccountPolicy;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
+
+    protected $policies = [
+        Account::class => AccountPolicy::class,
+
+    ];
     /**
      * Register any application services.
      */
     public function register(): void
     {
-        //
+
     }
 
     /**

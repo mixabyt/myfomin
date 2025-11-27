@@ -4,7 +4,7 @@ namespace App\Domain;
 use Illuminate\Database\Eloquent\Model;
 
 class Account extends Model {
-    // protected $fillable = ['id', 'name', 'amount'];
+
     public int $id;
     public string $name;
     public int $amount;
