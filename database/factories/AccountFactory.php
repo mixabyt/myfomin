@@ -19,7 +19,7 @@ class AccountFactory extends Factory
         return [
             'name' => fake()->word(),
             'amount' => fake()->numberBetween(100, 5000),
-            'user_id' => \App\Models\User::factory(), // ← ДОДАНО
+            'user_id' => \App\Models\User::factory(),
         ];
     }
 }

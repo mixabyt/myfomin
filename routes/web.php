@@ -3,7 +3,7 @@
 use App\Http\Controllers\Api\CategoryApiController;
 use App\Http\Controllers\Api\TransactionApiController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TestController;
 use App\Http\Controllers\web\AccountController;
 use App\Http\Controllers\web\CategoryController;
 use App\Http\Controllers\web\TransactionController;
@@ -18,11 +18,11 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-Route::get('/profile', [ProfileController::class, 'index'])->name('profile.edit');
-Route::get('/register', [\App\Http\Controllers\Auth\RegisteredUserController::class, 'create'])->name('register');
+Route::get('/profile', [ProfileController::class, 'creaye'])->name('profile.edit');
+Route::post('/register', [\App\Http\Controllers\Auth\RegisteredUserController::class, 'store'])->name('register');
 
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'throttle:global'])->group(function () {
     Route::get('/accounts', [AccountController::class, 'index'])->name('accounts.index');
     Route::post('/accounts', [AccountController::class, 'store'])->name('accounts.create');
     Route::delete('/accounts/{account}', [AccountController::class, 'delete'])->name('accounts.delete');
@@ -36,15 +36,15 @@ Route::middleware('auth')->group(function () {
 });
 
 
-Route::prefix('api')->group(function () {
-    Route::post('/accounts', [AccountApiController::class, 'store']);
+Route::prefix('api')->middleware('throttle:global')->group(function () {
+    Route::post('/accounts', [AccountApiController::class, 'store'])->middleware('idempotent');
     Route::get('/accounts', [AccountApiController::class, 'index']);
     Route::put('/accounts/{id}', [AccountApiController::class, 'update']);
     Route::delete('/accounts/{id}', [AccountApiController::class, 'destroy']);
 
     Route::get('/categories/{type}', [CategoryApiController::class, 'index']);
 
-    Route::post('/transactions', [TransactionApiController::class, 'store']);
+    Route::post('/transactions', [TransactionApiController::class, 'store'])->middleware('idempotent');
     Route::get('/transactions', [TransactionApiController::class, 'index']);
     Route::put('/transactions/{id}', [TransactionApiController::class, 'update']);
     Route::delete('/transactions/{id}', [TransactionApiController::class, 'destroy']);
@@ -54,3 +54,5 @@ Route::prefix('api')->group(function () {
 
 
 Route::get('/health', [HealthController::class, 'check']);
+Route::view('/test', 'test');
+Route::post('/test-backoff', TestController::class);
